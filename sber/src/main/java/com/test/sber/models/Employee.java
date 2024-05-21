@@ -1,12 +1,17 @@
 package com.test.sber.models;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
-import javax.management.relation.Role;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Getter
+@Setter
+@ToString
 @Table(name = "employees")
 public class Employee {
     @Id
@@ -16,6 +21,9 @@ public class Employee {
     String lastName;
     Double salary;
     Role role;
-    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH},fetch = FetchType.LAZY)
+    @ManyToOne(
+            cascade = {CascadeType.PERSIST,CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH},
+            fetch = FetchType.LAZY
+    )
     Company company;
 }

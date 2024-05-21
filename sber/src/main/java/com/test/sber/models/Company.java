@@ -1,13 +1,18 @@
 package com.test.sber.models;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Getter
+@Setter
+@ToString
+@Table(name = "company")
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,8 +20,24 @@ public class Company {
     @Column(name = "company_name")
     String companyName;
     @Column(name = "employee_in_company")
-    @JoinColumn(name = "employee_id")
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.LAZY)
-    List<Employee> employeeInCompany;
+//    @JoinColumn(name = "employee_id")
+    @OneToMany(
+            mappedBy = "company",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
+    List<Employee> employeeInCompany = new ArrayList<>();
+
+    public void addEmployee(Employee employee){
+        employeeInCompany.add(employee);
+        employee.setCompany(this);
+    }
+
+    public void removeEmployee(Employee employee){
+        employeeInCompany.remove(employee);
+        employee.setCompany(null);
+    }
+
 
 }
