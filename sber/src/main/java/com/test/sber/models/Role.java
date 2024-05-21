@@ -1,6 +1,6 @@
 package com.test.sber.models;
 
-public enum Roles {
+public enum Role {
     PROGRAMMER,
     HR,
     DIRECTOR,
