@@ -1,4 +1,5 @@
 package com.test.sber.controller;
+
 import com.test.sber.models.Company;
 import com.test.sber.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class CompanyController {
 
     @PutMapping("/{companyId}")
     public ResponseEntity<Company> updateCompany(@RequestBody Company company, @PathVariable Long companyId) {
-        return ResponseEntity.ok(companyService.updateCompany(company,companyId).orElseThrow(NoSuchElementException::new));
+        return ResponseEntity.ok(companyService.updateCompany(company, companyId).orElseThrow(NoSuchElementException::new));
 
     }
 

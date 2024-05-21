@@ -1,4 +1,5 @@
 package com.test.sber.models;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class Employee {
     Double salary;
     Role role;
     @ManyToOne(
-            cascade = {CascadeType.PERSIST,CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH},
+            cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH},
             fetch = FetchType.LAZY
     )
     Company company;

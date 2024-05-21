@@ -20,7 +20,6 @@ public class Company {
     @Column(name = "company_name")
     String companyName;
     @Column(name = "employee_in_company")
-//    @JoinColumn(name = "employee_id")
     @OneToMany(
             mappedBy = "company",
             cascade = CascadeType.ALL,
@@ -29,12 +28,12 @@ public class Company {
     )
     List<Employee> employeeInCompany = new ArrayList<>();
 
-    public void addEmployee(Employee employee){
+    public void addEmployee(Employee employee) {
         employeeInCompany.add(employee);
         employee.setCompany(this);
     }
 
-    public void removeEmployee(Employee employee){
+    public void removeEmployee(Employee employee) {
         employeeInCompany.remove(employee);
         employee.setCompany(null);
     }
