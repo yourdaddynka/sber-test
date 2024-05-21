@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
+/**
+ * Аспект для логирования выполнения методов контроллеров.
+ */
 @Aspect
 @Component
 @AllArgsConstructor
@@ -19,6 +22,11 @@ import java.util.Arrays;
 public class LoggAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggAspect.class);
 
+    /**
+     * Логирование перед выполнением метода контроллера.
+     *
+     * @param joinPoint Точка входа для выполнения метода.
+     */
     @Before("com.test.sber.aop.AllMethodsPointCut.allMethodsFromCompanyController() " +
             "|| com.test.sber.aop.AllMethodsPointCut.allMethodsFromEntityController()")
     public void beforeControllerMethodExecution(JoinPoint joinPoint) {
@@ -27,6 +35,12 @@ public class LoggAspect {
         LOGGER.info("With arguments: " + Arrays.toString(joinPoint.getArgs()));
     }
 
+    /**
+     * Логирование после возникновения исключения при выполнении метода контроллера.
+     *
+     * @param joinPoint Точка входа для выполнения метода.
+     * @param ex        Сгенерированное исключение.
+     */
     @AfterThrowing(pointcut = "com.test.sber.aop.AllMethodsPointCut.allMethodsFromEntityController()" +
             "|| com.test.sber.aop.AllMethodsPointCut.allMethodsFromCompanyController()", throwing = "ex")
     public void logAfterThrowingFromController(JoinPoint joinPoint, Throwable ex) {

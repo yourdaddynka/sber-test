@@ -7,7 +7,10 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
-
+/**
+ * Класс, представляющий сущность "Сотрудник" в базе данных.
+ * Содержит информацию о сотруднике, включая имя, фамилию, зарплату, роль и принадлежность к компании.
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Getter
