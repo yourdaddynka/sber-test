@@ -15,7 +15,8 @@ public class Company {
     @Column(name = "company_name")
     String companyName;
     @Column(name = "employee_in_company")
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH,CascadeType.DETACH},fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, fetch = FetchType.LAZY)
     List<Employee> employeeInCompany;
 
 }
