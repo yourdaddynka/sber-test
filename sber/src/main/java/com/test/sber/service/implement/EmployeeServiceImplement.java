@@ -1,9 +1,7 @@
 package com.test.sber.service.implement;
 
-import com.test.sber.mapper.MapperEntity;
 import com.test.sber.models.Company;
 import com.test.sber.models.Employee;
-import com.test.sber.models.dto.EmployeeDto;
 import com.test.sber.repository.CompanyRepository;
 import com.test.sber.repository.EmployeeRepository;
 import com.test.sber.service.EmployeeService;
@@ -21,62 +19,67 @@ public class EmployeeServiceImplement implements EmployeeService {
     @Autowired
     EmployeeRepository employeeRepository;
     @Autowired
-    MapperEntity mapper;
-    @Autowired
     CompanyRepository companyRepository;
 
     @Override
-    public EmployeeDto save(Long companyId, EmployeeDto employeeDto) {
-        Employee employee = mapper.mapperEntity(employeeDto);
+    public Optional<Employee> saveEmployeeFromCompany(Employee employee, Long companyId) {
+        return companyRepository.findById(companyId)
+                .map(company -> {
+                    if (company.getEmployeeInCompany().stream()
+                            .noneMatch(e -> e.getId().equals(employee.getId()))) {
+                        employee.setCompany(company);
+                        company.addEmployee(employee);
+                        return Optional.of(employeeRepository.save(employee));
+                    } else {
+                        throw new NoSuchElementException("Employee with id " + employee.getId() + " already exists in company with id " + companyId);
+                    }
+                })
+                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId + " not found"));
+    }
+
+    @Override
+    public Optional<Employee> updateEmployeeToCompany(Long companyId, Long employeeId, Employee employee) {
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId+ " not found"));
-        employee.setCompany(company);
-        Employee newComment = employeeRepository.save(employee);
-        company.getEmployeeInCompany().add(newComment);
-        return mapper.mapperDto(newComment);
+                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId + " not found"));
+        Employee existingEmployee = company.getEmployeeInCompany().stream()
+                .filter(e -> e.getId().equals(employeeId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Employee with id " + employeeId + " not found in company with id " + companyId));
+        existingEmployee.setName(employee.getName());
+        existingEmployee.setLastName(employee.getLastName());
+        existingEmployee.setSalary(employee.getSalary());
+        existingEmployee.setRole(employee.getRole());
+        return Optional.of(employeeRepository.save(existingEmployee));
     }
 
     @Override
-    public EmployeeDto update(Long companyId, Long employeeID, EmployeeDto employeeDto) {
+    public Optional<List<Employee>> getEmployeesByCompanyId(Long companyId) {
+        Optional<Company> company = Optional.ofNullable(companyRepository.findById(companyId)
+                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId + " not found")));
+        return Optional.ofNullable(company.get().getEmployeeInCompany());
+    }
+
+    @Override
+    public Optional<Employee> getEmployeeById(Long companyId, Long employeeId) {
+        return companyRepository.findById(companyId)
+                .map(company -> company.getEmployeeInCompany().stream()
+                        .filter(employee -> employee.getId().equals(employeeId))
+                        .findFirst()
+                        .orElseThrow(() -> new NoSuchElementException("Employee with id " + employeeId + " not found in company with id " + companyId)));
+    }
+
+    @Override
+    public void removeEmployeeInCompany(Long companyId, Long employeeId) {
         Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId+ " not found"));
-        Employee employee = employeeRepository.findById(employeeID)
-                .orElseThrow(() -> new NoSuchElementException("Employee with id " + employeeID+ " not found"));
-        if (!employee.getCompany().getId().equals(company.getId())) throw new NoSuchElementException( companyId + "Bad_Request" );
-        employee.setRole(employeeDto.getRole());
-        employee.setName(employeeDto.getName());
-        employee.setLastName(employeeDto.getLastName());
-        employee.setSalary(employeeDto.getSalary());
-        employee.setCompany(employeeDto.);
-        Employee commentUpdate = employeeRepository.save(employee);
-        return mapper.mapperDto(commentUpdate);
-
-    }
-    @Override
-    public List<EmployeeDto> getEmployeeForCompanyId(Long companyId) {
-        List<Employee> employees =  employeeRepository.getEmployeeForCompanyId(companyId);
-
-    }
-
-    @Override
-    public EmployeeDto getEmployeForId(Long companyId, Long commentId) {
-        Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId+ " not found"));
-        Employee employee = employeeRepository.findById(commentId)
-                .orElseThrow(() -> new NoSuchElementException("Employee with id " + commentId+ " not found"));
-        if (!employee.getCompany().getId().equals(company.getId()))
-            throw new NoSuchElementException( companyId + "Bad_Request" );
-        return mapper.mapperDto(employee);
-    }
-
-    @Override
-    public void deleteEmployee(Long companyId, Long employeeId) {
-                Company company = companyRepository.findById(companyId)
-                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId+ " not found"));
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new NoSuchElementException("Employee with id " + companyId+ " not found"));
-        if (!employee.getCompany().getId().equals(company.getId()))
-            throw new NoSuchElementException(companyId+ "Bad_Request" );
+                .orElseThrow(() -> new NoSuchElementException("Company with id " + companyId + " not found"));
+        Employee employee = company.getEmployeeInCompany().stream()
+                .filter(e -> e.getId().equals(employeeId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("Employee with id " + employeeId + " not found in company with id " + companyId));
+        company.removeEmployee(employee);
+        employee.setCompany(null);
         employeeRepository.delete(employee);
     }
+
 }
+

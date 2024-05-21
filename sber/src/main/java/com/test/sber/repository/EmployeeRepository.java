@@ -6,6 +6,5 @@ import java.util.List;
 
 @Repository
 public interface EmployeeRepository extends EntityRepository<Employee, Long> {
-    List<Employee> findByCompanyId(Long companyId);
-    List<Employee> getEmployeeForCompanyId(Long companyId);
+
 }

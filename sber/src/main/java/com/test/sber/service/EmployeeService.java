@@ -1,13 +1,15 @@
 package com.test.sber.service;
 import com.test.sber.models.Employee;
-import com.test.sber.models.dto.EmployeeDto;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EmployeeService {
-    EmployeeDto save(Long companyId, EmployeeDto employeeDto);
-    EmployeeDto update(Long companyId, Long employeeID, EmployeeDto employeeDto);
-    List<EmployeeDto> getEmployeeForCompanyId(Long companyId);
-    EmployeeDto getEmployeForId(Long companyId, Long commentId);
-    void deleteEmployee(Long companyId, Long employeeId);
+    Optional<Employee> saveEmployeeFromCompany(Employee employee, Long companyId);
+    Optional<Employee> updateEmployeeToCompany(Long companyId, Long employeeId,  Employee employee);
+    Optional<List<Employee>> getEmployeesByCompanyId(Long companyId);
+    Optional<Employee> getEmployeeById(Long companyId,Long employeeId);
+    void removeEmployeeInCompany(Long companyId,Long employeeId);
 }
